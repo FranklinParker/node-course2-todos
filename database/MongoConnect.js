@@ -125,10 +125,49 @@ var findUserByName = (name) => {
 }
 
 
-getTodoCount();
+var deleteByText = (text) => {
+    connect(url, (err, client) => {
+        client.db('TodosApi').collection('Todos').deleteMany({text: text}).then((results) => {
+            console.log('results:', results.result);
+            client.close();
+        });
 
-findRangeToDos(0, 2);
-findUserByName('joe');
+    });
+
+}
+
+
+var deleteOneText = (text) => {
+    connect(url, (err, client) => {
+        client.db('TodosApi').collection('Todos').deleteOne({text: text}).then((results) => {
+            console.log('results:', results.result);
+            client.close();
+        });
+
+    });
+
+}
+
+var findByIdDelete= (id) =>{
+    connect(url, (err, client) => {
+        client.db('TodosApi').collection('Todos').findOneAndDelete({completed: false}).then((results) => {
+            console.log('results:', results);
+            client.close();
+        });
+
+    });
+
+}
+
+
+
+// deleteByText('Walk Dog');
+// deleteByText('Walk Dog5');
+// findByIdDelete(false);
+//getTodoCount();
+
+//findRangeToDos(0, 2);
+//findUserByName('joe');
 //addManyToDos(20);
 //getTodoById('5a5417df1b9ee9962ea5fc6d');
 //getToDos();
