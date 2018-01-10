@@ -25,11 +25,18 @@ app.post('/todos', (req, res) => {
 });
 
 
+app.get('/todos', (req, res) => {
+    TodoModel.find({}).then((todos) => {
+        res.send({todos});
+    }, (error) => res.status(400).send(error));
+
+});
+
 app.post('/user', (req, res) => {
     userDatabase.saveUser(req.body.email)
-        .then((doc)=>{
+        .then((doc) => {
             res.send(doc);
-        },(err)=>{
+        }, (err) => {
             res.status(400).send(err);
         });
 
