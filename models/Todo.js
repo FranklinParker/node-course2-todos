@@ -22,10 +22,16 @@ const TodoSchema = new Schema({
 const Todo = mongoose.model('Todo', TodoSchema);
 
 module.exports.TodoModel = Todo;
-const id = "5a56c5b3ae6ca8a6889ce820";
-Todo.find({_id: id})
-    .then((docs)=> console.log('todos find', docs));
-
-Todo.findOne({_id: id})
-    .then((doc ) => console.log('todo find one', doc));
+const id = "6a56c5b3ae6ca8a6889ce820";
+// Todo.find({_id: id})
+//     .then((docs)=> console.log('todos find', docs));
+//
+// Todo.findOne({_id: id})
+//     .then((doc ) => console.log('todo find one', doc));
+//
+//
+// Todo.findById( id)
+//     .then((doc ) => console.log('todo findById', doc));
+//
+//
 
