@@ -6,7 +6,7 @@ const {ObjectId} = require('mongodb');
 const lodash = require('lodash');
 
 
-var {userDatabase} = require('../models/User');
+var {User} = require('../models/User');
 var {TodoModel} = require('../models/Todo');
 
 const database = require('../database/mongooseDb');
@@ -98,27 +98,17 @@ app.delete('/todos/:id', (req, res) => {
 
 
 app.post('/user', (req, res) => {
-    userDatabase.saveUser(req.body.email)
-        .then((doc) => {
-            res.send(doc);
-        }, (err) => {
-            res.status(400).send(err);
-        });
-
-
-});
-
-
-app.post('/user', (req, res) => {
-    userDatabase.saveUser(req.body.email)
-        .then((doc) => {
-            res.send(doc);
-        }, (err) => {
-            res.status(400).send(err);
-        });
-
+    var body = lodash.pick(req.body,['email', 'password']);
+    const user = new User(body);
+    user.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
 
 });
+
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 });
