@@ -3,7 +3,9 @@ const config = require('../config/config');
 const bodyParser = require('body-parser');
 const {ObjectId} = require('mongodb');
 
+
 const lodash = require('lodash');
+var {authenticate} = require('./middleware/authenticate');
 
 
 var {User} = require('../models/User');
@@ -108,6 +110,10 @@ app.post('/users', (req, res) => {
         console.log('error', e);
         res.status(400).send(e);
     })
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 
