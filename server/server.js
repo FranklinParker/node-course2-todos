@@ -36,7 +36,7 @@ app.patch('/todos/:id', (req, res) => {
     if (!ObjectId.isValid(id)) {
         return res.status(404).send({error: 'invalid id'});
     }
-    var body = lodash.pick(req.body,['text', 'completed']);
+    var body = lodash.pick(req.body, ['text', 'completed']);
     if (lodash.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
     } else {
@@ -95,17 +95,19 @@ app.delete('/todos/:id', (req, res) => {
     }, (error) => res.status(400).send({error: ''}));
 
 });
+app.post('/users', (req, res) => {
+    var body = lodash.pick(req.body, ['email', 'password']);
+    var user = new User(body);
 
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
 
-app.post('/user', (req, res) => {
-    var body = lodash.pick(req.body,['email', 'password']);
-    const user = new User(body);
-    user.save().then((doc) => {
-        res.send(doc);
-    }, (e) => {
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        console.log('error', e);
         res.status(400).send(e);
-    });
-
+    })
 });
 
 
