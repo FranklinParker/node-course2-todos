@@ -5,6 +5,7 @@ const {ObjectID } = require('mongodb');
 const {app} = require('./../server');
 const Todo  = require('./../../models/Todo').TodoModel;
 const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
+const {User} = require('../../models/User');
 
 
 
