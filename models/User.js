@@ -51,8 +51,8 @@ UserSchema.pre('save', function (next) {
             if (err) {
                 next(new Error('error gen salt'));
             } else {
-                bcrypt.hash(user.password, salt,(err, hash)=> {
-                    if(err){
+                bcrypt.hash(user.password, salt, (err, hash) => {
+                    if (err) {
                         next(new Error('error gen salt'));
                     }
                     user.password = hash;
@@ -80,6 +80,27 @@ UserSchema.methods.generateAuthToken = function () {
 
     return user.save().then(() => {
         return token;
+    });
+};
+
+UserSchema.statics.findByCredentials = function (email, password) {
+    var User = this;
+
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        }
+
+        return new Promise((resolve, reject) => {
+            // Use bcrypt.compare to compare password and user.password
+            bcrypt.compare(password, user.password, (err, res) => {
+                if (res) {
+                    resolve(user);
+                } else {
+                    reject();
+                }
+            });
+        });
     });
 };
 
