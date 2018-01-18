@@ -19,9 +19,11 @@ var app = express();
 const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
-app.post('/todos', (req, res) => {
+
+app.post('/todos', authenticate, (req, res) => {
     var todo = new TodoModel({
-        text: req.body.text
+        text: req.body.text,
+        _creator: req.user._id
     });
 
     todo.save().then((doc) => {
@@ -31,6 +33,15 @@ app.post('/todos', (req, res) => {
     });
 });
 
+app.get('/todos', authenticate, (req, res) => {
+    TodoModel.find({
+        _creator: req.user._id
+    }).then((todos) => {
+        res.send({todos});
+    }, (e) => {
+        res.status(400).send(e);
+    });
+});
 
 app.patch('/todos/:id', (req, res) => {
     const id = req.params.id;
@@ -58,12 +69,6 @@ app.patch('/todos/:id', (req, res) => {
 });
 
 
-app.get('/todos', (req, res) => {
-    TodoModel.find({}).then((todos) => {
-        res.send({todos});
-    }, (error) => res.status(400).send(error));
-
-});
 
 
 app.get('/todos/:id', (req, res) => {
