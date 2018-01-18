@@ -42,65 +42,72 @@ app.get('/todos', authenticate, (req, res) => {
         res.status(400).send(e);
     });
 });
-
-app.patch('/todos/:id', (req, res) => {
-    const id = req.params.id;
+app.get('/todos/:id', authenticate, (req, res) => {
+    var id = req.params.id;
 
     if (!ObjectId.isValid(id)) {
-        return res.status(404).send({error: 'invalid id'});
+        return res.status(404).send();
     }
+
+    TodoModel.findOne({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send();
+    });
+});
+
+app.delete('/todos/:id', authenticate, (req, res) => {
+    var id = req.params.id;
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    TodoModel.findOneAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send();
+    });
+});
+
+app.patch('/todos/:id', authenticate, (req, res) => {
+    var id = req.params.id;
     var body = lodash.pick(req.body, ['text', 'completed']);
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+
     if (lodash.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
     } else {
-        body.completedAt = null;
         body.completed = false;
+        body.completedAt = null;
     }
 
-    TodoModel.findByIdAndUpdate(id, {$set: body}, {new: true})
-        .then((todo) => {
-            if (!todo) {
-                return res.status(404).send({error: 'no update'})
-            }
-            res.send({todo});
-        }, (e) => {
-            res.status(400).send(e);
-        });
-});
-
-
-
-
-app.get('/todos/:id', (req, res) => {
-    const id = req.params.id;
-    if (!ObjectId.isValid(id)) {
-        return res.status(404).send({error: 'invalid id'});
-    }
-
-    TodoModel.findById(id).then((todo) => {
+    TodoModel.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((todo) => {
         if (!todo) {
-            return res.status(404).send({error: 'not find'});
+            return res.status(404).send();
         }
+
         res.send({todo});
-    }, (error) => res.status(400).send({error: ''}));
-
-});
-
-
-app.delete('/todos/:id', (req, res) => {
-    const id = req.params.id;
-    console.log('deleting:' + id);
-    if (!ObjectId.isValid(id)) {
-        return res.status(404).send({error: 'invalid id'});
-    }
-
-    TodoModel.findByIdAndRemove(id).then((todo) => {
-        if (!todo) {
-            return res.status(404).send({error: 'not find'});
-        }
-        res.send({todo});
-    }, (error) => res.status(400).send({error: ''}));
-
+    }).catch((e) => {
+        res.status(400).send();
+    })
 });
 app.post('/users', (req, res) => {
     var body = lodash.pick(req.body, ['email', 'password']);
