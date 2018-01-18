@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const config = require("../config/appConfig");
+const config = require("../config/config");
 const dbUrl = process.env.MONGODB_URI || config.mongooseDBUrl;
 console.log('db connection:', dbUrl);
 

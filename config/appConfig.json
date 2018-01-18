@@ -1,5 +1,0 @@
-{
-    "mongooseDBUrl":"mongodb://localhost:27017/TodosApi",
-    "mongooseDBUrlWe":"user:password@serverurl.mlab.com:port/school"
-    
-}  
